@@ -529,15 +529,15 @@ publish(Type, RecipientArn, Message, Subject, Attributes, Config) ->
             target -> [{"TargetArn", RecipientArn}];
             phone -> [{"PhoneNumber", RecipientArn}]
         end,
-    MessageParams =
-        case Message of
-            [{_,_} |_] ->
-                EncodedMessage = jsx:encode(Message),
-                [{"Message",            EncodedMessage},
-                 {"MessageStructure",   "json"}];
-            Message ->
-                [{"Message", Message}]
-        end,
+    MessageParams = [{"Message", Message}, {"MessageStructure","json"}],
+%%        case Message of
+%%            [{_,_} |_] ->
+%%                EncodedMessage = jsx:encode(Message),
+%%                [{"Message",            EncodedMessage},
+%%                 {"MessageStructure",   "json"}];
+%%            Message ->
+%%                [{"Message", Message}, {"MessageStructure","json"}]
+%%        end,
     SubjectParam =
         case Subject of
             undefined -> [];
