@@ -681,10 +681,10 @@ new(AccessKeyID, SecretAccessKey) ->
 
 new(AccessKeyID, SecretAccessKey, Host) ->
     #aws_config{
-       access_key_id=AccessKeyID,
-       secret_access_key=SecretAccessKey,
-       sns_host=Host
-      }.
+        access_key_id=AccessKeyID,
+        secret_access_key=SecretAccessKey,
+        sns_host=Host
+    }.
 
 -spec configure(string(), string()) -> ok.
 
@@ -772,8 +772,8 @@ sns_simple_request(Config, Action, Params) ->
 
 sns_xml_request(Config, Action, Params) ->
     case erlcloud_aws:aws_request_xml4(post,
-                                       scheme_to_protocol(Config#aws_config.sns_scheme),
-                                       Config#aws_config.sns_host, Config#aws_config.sns_port, "/",
+                                       "https",
+                                       Config#aws_config.sns_host, 443, "/",
                                        [{"Action", Action}, {"Version", ?API_VERSION} | Params],
                                        "sns", Config) of
         {ok, XML} -> XML;
