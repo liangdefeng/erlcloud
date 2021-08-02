@@ -54,7 +54,7 @@
          ]).
 -export([parse_event/1, get_event_type/1, parse_event_message/1,
          get_notification_attribute/2]).
--export([new/2, new/3, configure/2, configure/3, new_config/3]).
+-export([new/2, new/5, configure/2, configure/5]).
 
 -include("erlcloud.hrl").
 -include("erlcloud_aws.hrl").
@@ -677,25 +677,27 @@ new(AccessKeyID, SecretAccessKey) ->
        secret_access_key=SecretAccessKey
       }.
 
--spec new(string(), string(), string()) -> aws_config().
+-spec new(string(), string(), string(), string(), int()) -> aws_config().
 
-new(AccessKeyID, SecretAccessKey, Host) ->
+new(AccessKeyID, SecretAccessKey, Host, Scheme, Port) ->
     #aws_config{
-        access_key_id=AccessKeyID,
-        secret_access_key=SecretAccessKey,
-        sns_host=Host
+      access_key_id = AccessKeyID,
+      secret_access_key = SecretAccessKey,
+      sns_host = Host,
+      sns_scheme = Scheme,
+      sns_port = Port
     }.
 
-
 -spec configure(string(), string()) -> ok.
+
 configure(AccessKeyID, SecretAccessKey) ->
     put(aws_config, new(AccessKeyID, SecretAccessKey)),
     ok.
 
--spec configure(string(), string(), string()) -> ok.
+-spec configure(string(), string(), string(), string(), int()) -> ok.
 
-configure(AccessKeyID, SecretAccessKey, Host) ->
-    put(aws_config, new(AccessKeyID, SecretAccessKey, Host)),
+configure(AccessKeyID, SecretAccessKey, Host, Scheme, Port) ->
+    put(aws_config, new(AccessKeyID, SecretAccessKey, Host, Scheme, Port)),
     ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -766,22 +768,14 @@ new_config(AccessKeyID, SecretAccessKey) ->
        secret_access_key=SecretAccessKey
       }.
 
-new_config(Host, Scheme, Port) ->
-  #aws_config{
-    sns_host = Host,
-    sns_scheme = Scheme,
-    sns_port = Port
-  }.
-
 sns_simple_request(Config, Action, Params) ->
     sns_request(Config, Action, Params),
     ok.
 
 sns_xml_request(Config, Action, Params) ->
-    Scheme = application:get_env(erlcloud, aws_sns_scheme, "https"),
-    Host = application:get_env(erlcloud, aws_sns_host, ""),
-    Port = application:get_env(erlcloud, aws_sns_port, 443),
-    case erlcloud_aws:aws_request_xml4(post, Scheme, Host, Port, "/",
+    case erlcloud_aws:aws_request_xml4(post,
+                                       scheme_to_protocol(Config#aws_config.sns_scheme),
+                                       Config#aws_config.sns_host, Config#aws_config.sns_port, "/",
                                        [{"Action", Action}, {"Version", ?API_VERSION} | Params],
                                        "sns", Config) of
         {ok, XML} -> XML;
@@ -795,10 +789,9 @@ sns_xml_request(Config, Action, Params) ->
     end.
 
 sns_request(Config, Action, Params) ->
-    Scheme = application:get_env(erlcloud, aws_sns_scheme, "https"),
-    Host = application:get_env(erlcloud, aws_sns_host, ""),
-    Port = application:get_env(erlcloud, aws_sns_port, 443),
-    case erlcloud_aws:aws_request_xml4(post, Scheme, Host, Port, "/",
+    case erlcloud_aws:aws_request_xml4(post,
+                                       scheme_to_protocol(Config#aws_config.sns_scheme),
+                                       Config#aws_config.sns_host, Config#aws_config.sns_port, "/",
                                        [{"Action", Action}, {"Version", ?API_VERSION} | Params],
                                        "sns", Config) of
         {ok, _Response} -> ok;
