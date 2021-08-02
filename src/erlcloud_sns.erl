@@ -677,7 +677,7 @@ new(AccessKeyID, SecretAccessKey) ->
        secret_access_key=SecretAccessKey
       }.
 
--spec new(string(), string(), string(), string(), string(), int()) -> aws_config().
+-spec new(string(), string(), string(), string(), string(), integer()) -> aws_config().
 
 new(AccessKeyID, SecretAccessKey, Region, Host, Scheme, Port) ->
     #aws_config{
@@ -695,7 +695,7 @@ configure(AccessKeyID, SecretAccessKey) ->
     put(aws_config, new(AccessKeyID, SecretAccessKey)),
     ok.
 
--spec configure(string(), string(), string(), string(), string(), int()) -> ok.
+-spec configure(string(), string(), string(), string(), string(), integer()) -> ok.
 
 configure(AccessKeyID, SecretAccessKey, Region, Host, Scheme, Port) ->
     put(aws_config, new(AccessKeyID, SecretAccessKey, Region, Host, Scheme, Port)),
