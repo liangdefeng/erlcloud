@@ -778,9 +778,10 @@ sns_simple_request(Config, Action, Params) ->
     ok.
 
 sns_xml_request(Config, Action, Params) ->
-    case erlcloud_aws:aws_request_xml4(post,
-                                       Config#aws_config.sns_scheme,
-                                       Config#aws_config.sns_host, Config#aws_config.sns_port, "/",
+    Scheme = application:get_env(erlcloud, aws_sns_scheme, "https"),
+    Host = application:get_env(erlcloud, aws_sns_host, ""),
+    Port = application:get_env(erlcloud, aws_sns_port, 443),
+    case erlcloud_aws:aws_request_xml4(post, Scheme, Host, Port, "/",
                                        [{"Action", Action}, {"Version", ?API_VERSION} | Params],
                                        "sns", Config) of
         {ok, XML} -> XML;
@@ -794,9 +795,10 @@ sns_xml_request(Config, Action, Params) ->
     end.
 
 sns_request(Config, Action, Params) ->
-    case erlcloud_aws:aws_request_xml4(post,
-                                        Config#aws_config.sns_scheme,
-                                        Config#aws_config.sns_host, Config#aws_config.sns_port, "/",
+    Scheme = application:get_env(erlcloud, aws_sns_scheme, "https"),
+    Host = application:get_env(erlcloud, aws_sns_host, ""),
+    Port = application:get_env(erlcloud, aws_sns_port, 443),
+    case erlcloud_aws:aws_request_xml4(post, Scheme, Host, Port, "/",
                                        [{"Action", Action}, {"Version", ?API_VERSION} | Params],
                                        "sns", Config) of
         {ok, _Response} -> ok;
