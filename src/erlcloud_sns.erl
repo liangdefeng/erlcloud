@@ -54,7 +54,7 @@
          ]).
 -export([parse_event/1, get_event_type/1, parse_event_message/1,
          get_notification_attribute/2]).
--export([new/2, new/5, configure/2, configure/5]).
+-export([new/2, new/6, configure/2, configure/6]).
 
 -include("erlcloud.hrl").
 -include("erlcloud_aws.hrl").
@@ -677,12 +677,13 @@ new(AccessKeyID, SecretAccessKey) ->
        secret_access_key=SecretAccessKey
       }.
 
--spec new(string(), string(), string(), string(), int()) -> aws_config().
+-spec new(string(), string(), string(), string(), string(), int()) -> aws_config().
 
-new(AccessKeyID, SecretAccessKey, Host, Scheme, Port) ->
+new(AccessKeyID, SecretAccessKey, Region, Host, Scheme, Port) ->
     #aws_config{
       access_key_id = AccessKeyID,
       secret_access_key = SecretAccessKey,
+      aws_region = Region,
       sns_host = Host,
       sns_scheme = Scheme,
       sns_port = Port
@@ -694,10 +695,10 @@ configure(AccessKeyID, SecretAccessKey) ->
     put(aws_config, new(AccessKeyID, SecretAccessKey)),
     ok.
 
--spec configure(string(), string(), string(), string(), int()) -> ok.
+-spec configure(string(), string(), string(), string(), string(), int()) -> ok.
 
-configure(AccessKeyID, SecretAccessKey, Host, Scheme, Port) ->
-    put(aws_config, new(AccessKeyID, SecretAccessKey, Host, Scheme, Port)),
+configure(AccessKeyID, SecretAccessKey, Region, Host, Scheme, Port) ->
+    put(aws_config, new(AccessKeyID, SecretAccessKey, Region, Host, Scheme, Port)),
     ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
