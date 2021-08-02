@@ -54,7 +54,7 @@
          ]).
 -export([parse_event/1, get_event_type/1, parse_event_message/1,
          get_notification_attribute/2]).
--export([new/2, new/3, configure/2, configure/3]).
+-export([new/2, new/3, configure/2, configure/3, new_config/3]).
 
 -include("erlcloud.hrl").
 -include("erlcloud_aws.hrl").
@@ -687,20 +687,7 @@ new(AccessKeyID, SecretAccessKey, Host) ->
     }.
 
 
-
--spec new(string(), int()) -> aws_config().
-
-new(AccessKeyID, SecretAccessKey, Host, Scheme, Port) ->
-  #aws_config{
-    access_key_id = AccessKeyID,
-    secret_access_key = SecretAccessKey,
-    sns_host = Host,
-    sns_scheme = Scheme,
-    sns_port = Port
-  }.
-
 -spec configure(string(), string()) -> ok.
-
 configure(AccessKeyID, SecretAccessKey) ->
     put(aws_config, new(AccessKeyID, SecretAccessKey)),
     ok.
@@ -778,6 +765,13 @@ new_config(AccessKeyID, SecretAccessKey) ->
        access_key_id=AccessKeyID,
        secret_access_key=SecretAccessKey
       }.
+
+new_config(Host, Scheme, Port) ->
+  #aws_config{
+    sns_host = Host,
+    sns_scheme = Scheme,
+    sns_port = Port
+  }.
 
 sns_simple_request(Config, Action, Params) ->
     sns_request(Config, Action, Params),
